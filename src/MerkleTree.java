@@ -2,14 +2,10 @@ import java.security.MessageDigest;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 
-
 public class MerkleTree{
   byte[] hash;
-  MerkleTree left;
-  MerkleTree right;
-  int start;
-  int end;
-  int hashLength;
+  MerkleTree left, right;
+  int start, end, hashLength, nextPower, size;
   MessageDigest digest;
 
   public MerkleTree(String s, int index) {
@@ -25,6 +21,8 @@ public class MerkleTree{
     right = null;
     start = index;
     end = index;
+    size = 1;
+    nextPower = 2;
 
     try {
       byte[] b = s.getBytes("UTF-8");
@@ -37,8 +35,6 @@ public class MerkleTree{
       System.out.println("No such encoding type");
       System.exit(1);
     }
-
-
   }
 
   public MerkleTree(MerkleTree l, MerkleTree r) {
@@ -57,6 +53,10 @@ public class MerkleTree{
       right = r;
       start = l.start;
       end = r.end;
+      size = l.size + r.size;
+      if(size < Math.max(l.nextPower, r.nextPower)) nextPower = Math.max(l.nextPower, r.nextPower);
+      else nextPower = 2 * Math.max(l.nextPower, r.nextPower);
+
       byte[] merge = new byte[1 + 2 * hashLength];
       merge[0] = 0x01;
       System.arraycopy(l.hash, 0, merge, 1, hashLength);
