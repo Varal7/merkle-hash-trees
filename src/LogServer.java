@@ -143,5 +143,21 @@ public class LogServer {
     }
   }
 
+  public LinkedList<byte[]> genPoof(int index){
+    MerkleTree current = tree;
+    LinkedList<byte[]> listHash = new LinkedList();
+    return makePoof(index, current, listHash);
+  }
 
+  LinkedList<byte[]> makePoof(int index, MerkleTree current, LinkedList<byte[]> listHash) {
+    if(current.end >= index){
+      listHash.addFirst(current.left.hash);
+      return makePoof(index, current.right, listHash);
+    }
+    else{
+      listHash.addFirst(current.left.hash);
+      listHash.addFirst(current.right.hash);
+      return listHash;
+    }
+  }
 }
