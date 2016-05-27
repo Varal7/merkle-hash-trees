@@ -26,19 +26,24 @@ public class MerkleTree{
     start = index;
     end = index;
 
-    byte leaf[] = new byte[hashLength+1];
-    leaf[0] = 0x00;
-
+    byte[] b;
     try {
-      byte[] b = s.getBytes("UTF-8");
-      for (int i = 0; i < hashLength; i++) {
+      b = s.getBytes("UTF-8");
+      
+      byte leaf[] = new byte[b.length+1];
+      leaf[0] = 0x00;
+      for (int i = 0; i < b.length; i++) {
         leaf[i+1] = b[i];
       }
+
+      hash = digest.digest(leaf);
+
     } catch(UnsupportedEncodingException e) {
       System.out.println("No such encoding type");
       System.exit(1);
     }
-    hash = digest.digest(leaf);
+
+
   }
 
   public MerkleTree(MerkleTree l, MerkleTree r) {
