@@ -1,95 +1,103 @@
 import java.util.Scanner;
+import java.security.MessageDigest;
 import java.io.FileReader;
 import java.util.Queue;
 import java.util.LinkedList;
+import java.util.List;
+import java.security.NoSuchAlgorithmException;
+import java.io.FileNotFoundException;
 
-public class LogServer{
-  MerkleTree tree;
-  MessageDigest digest;
-  int size;
 
-  public LogServer(String inputFile){
-    Scanner input = new Scanner(new FileReader(inputFile));
-    Queue<MerkleTree> MerkleQueue = new LinkedList<MerkleTree>();
-    digest = MessageDigest.getInstance("SHA−256");
 
-    int i = 0;
-    while(input.hasNextLine()){
-      String line = input.nextLine();
-      MerkleTree Merkle = MerkleTree(line, i);
+public class LogServer {
+    MerkleTree tree;
+    MessageDigest digest;
+    int size;
 
-      try{
-        MerkleQueue.add(Merkle);
-        size++;
-      }
-      catch(Exception e){
-        System.out.println("No more space available.");
-      }
-
-      i++;
-    }
-
-    buildTree(MerkleQueue);
-  }
-
-  public void buildTree(Queue<MerkleTree> MerkleQueueInit){
-    Queue<MerkleTree> MerkleQueues = new LinkedList<MerkleTree>[2];
-    MerkleQueues[0] = MerkleQueueInit;
-    MerkleQueues[1] = new LinkedList<MerkleTree>();
-
-    if(MerkleQueues[0].size() == 0) System.out.println("Error : empty queue.");
-    else{
-      int a = 0;
-      int b = 1;
-      while(MerkleQueues[a].size() != 1){
-        MerkleTree left, right;
-
-        while(MerkleQueues[a].size() > 0){
-          left = MerkleQueues[a].poll();
-          right = MerkleQueues[a].poll();
-          if(right == null) MerkleQueues[b].add(left);
-          else MerkleQueues[b].add(new MerkleTree(left, right));
+    public LogServer(String inputFile) {
+        try {
+        digest = MessageDigest.getInstance("MD5");
+        }
+        catch(NoSuchAlgorithmException e) {
+        System.out.println("No such algorithm");
         }
 
-        a = (a+1) % 2;
-        b = (b+1) % 2;
-      }
+        Queue<MerkleTree> merkleQueue = new LinkedList<MerkleTree>();
+        Scanner input;
+        try {
+            input = new Scanner(new FileReader(inputFile));
+            int i = 0;
+            while(input.hasNextLine()) {
+                String line = input.nextLine();
+                MerkleTree merkle = new MerkleTree(line, i);
+                try {
+                    merkleQueue.add(merkle);
+                    size++;
+                } catch(Exception e) {
+                    System.out.println("No more space available.");
+                }
+                i++;
+            }
+        }
+        catch(FileNotFoundException e) {
+          System.out.println("No such file");
+          System.exit(1);
+        }
 
-      tree = MerkleQueues[m].poll();
+        buildTree(merkleQueue);
     }
-  }
 
-  public byte[] currentRootHash(){
-    return tree.hash;
-  }
+    public void buildTree(Queue<MerkleTree> merkleQueueInit) {
+        Queue<MerkleTree>[] merkleQueues = new LinkedList[2];
+        merkleQueues[0] = merkleQueueInit;
+        merkleQueues[1] = new LinkedList<MerkleTree>();
 
-  public void append(String log){
-    MerkleTree current = tree;
-    tree.hash = auxAppend(log, current);
-  }
-
-  public List<byte[]> genPath(int index){
-    MerkleTree current = tree;
-    List<byte[]> listHash = new List<byte[]>();
-    makePath(index, current, listHash);
-
-    return listHash;
-  }
-
-  void makePath(int index, MerkleTree current, List<byte[]> listHash){
-    if(current.start == current.end && current.end == index){
-
+        if(merkleQueues[0].size() == 0) System.out.println("Error : empty queue.");
+        else {
+            int a = 0;
+            int b = 1;
+            while(merkleQueues[a].size() != 1) {
+                MerkleTree left, right;
+                while(merkleQueues[a].size() > 0) {
+                  left = merkleQueues[a].poll();
+                  right = merkleQueues[a].poll();
+                  if(right == null) merkleQueues[b].add(left);
+                  else merkleQueues[b].add(new MerkleTree(left, right));
+                }
+                a = (a+1) % 2;
+                b = (b+1) % 2;
+            }
+          tree = merkleQueues[a].poll();
+        }
     }
-    else if(current.left != null && current.left.end >= index){
-      listHash.add(current.right.hash);
-      makePath(index, current.left, listHash);
+
+    public byte[] currentRootHash() {
+        return tree.hash;
     }
-    else if(current.right != null && current.right.end >= index){
-      listHash.add(current.left.hash);
-      makePath(index, current.right, listHash);
+
+    public void append(String log) {
+        MerkleTree current = tree;
+        //tree.hash = auxAppend(log, current);
     }
-    else{
-      System.out.println("Index is out of range.");
+
+    public List<byte[]> genPath(int index) {
+        MerkleTree current = tree;
+        List<byte[]> listHash = new LinkedList();
+        return makePath(index, current, listHash);
     }
-  }
+
+    List<byte[]> makePath(int index, MerkleTree current, List<byte[]> listHash) {
+        if(current.start == current.end && current.end == index){
+            return listHash;
+        } else if(current.left != null && current.left.end >= index) {
+            listHash.add(current.right.hash);
+            return makePath(index, current.left, listHash);
+        } else if(current.right != null && current.right.end >= index) {
+            listHash.add(current.left.hash);
+            return makePath(index, current.right, listHash);
+        } else {
+            System.out.println("Index is out of range.");
+            return listHash;
+        }
+    }
 }
