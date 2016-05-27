@@ -12,7 +12,6 @@ import java.io.FileNotFoundException;
 public class LogServer {
   MerkleTree tree;
   MessageDigest digest;
-  int size;
 
   public LogServer(String inputFile) {
     try {
@@ -32,7 +31,6 @@ public class LogServer {
         MerkleTree merkle = new MerkleTree(line, i);
         try {
           merkleQueue.add(merkle);
-          size++;
         } catch(Exception e) {
           System.out.println("No more space available.");
         }
@@ -76,8 +74,16 @@ public class LogServer {
   }
 
   public void append(String log) {
-    MerkleTree current = tree;
-    //tree.hash = auxAppend(log, current);
+    tree = appendAux(log, tree);
+  }
+
+  public MerkleTree appendAux(String log, MerkleTree current) {
+    if(current.size == current.nextPower) {
+      MerkleTree newElement = new MerkleTree(log, current.size);
+      return new MerkleTree(current, newElement);
+    } else {
+      return new MerkleTree(current.left, appendAux(log, current.right));
+    }
   }
 
   public List<byte[]> genPath(int index) {

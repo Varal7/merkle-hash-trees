@@ -22,7 +22,7 @@ public class MerkleTree{
     start = index;
     end = index;
     size = 1;
-    nextPower = 2;
+    nextPower = 1;
 
     try {
       byte[] b = s.getBytes("UTF-8");
