@@ -1,4 +1,4 @@
-import java.util.List;
+import java.util.LinkedList;
 
 
 public class TestLogServer {
@@ -9,7 +9,7 @@ public class TestLogServer {
       l.append("Bidule");
       System.out.println("Current root hash [1..8] : " + l.currentRootHash());
       l.tree.display();
-      List<byte[]> li = l.genPath(3);
+      LinkedList<byte[]> li = l.genPath(3);
       for (byte[] b : li) {
         System.out.println(b);
       }
