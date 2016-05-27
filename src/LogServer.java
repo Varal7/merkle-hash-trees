@@ -114,24 +114,26 @@ public class LogServer {
     else return current;
   }
 
-  public List<byte[]> genPath(int index) {
+  public LinkedList<byte[]> genPath(int index) {
     MerkleTree current = tree;
-    List<byte[]> listHash = new LinkedList();
+    LinkedList<byte[]> listHash = new LinkedList();
     return makePath(index, current, listHash);
   }
 
-  List<byte[]> makePath(int index, MerkleTree current, List<byte[]> listHash) {
+  LinkedList<byte[]> makePath(int index, MerkleTree current, LinkedList<byte[]> listHash) {
     if(current.start == current.end && current.end == index){
       return listHash;
     } else if(current.left != null && current.left.end >= index) {
-      listHash.add(current.right.hash);
+      listHash.addFirst(current.right.hash);
       return makePath(index, current.left, listHash);
     } else if(current.right != null && current.right.end >= index) {
-      listHash.add(current.left.hash);
+      listHash.addFirst(current.left.hash);
       return makePath(index, current.right, listHash);
     } else {
       System.out.println("Index is out of range.");
       return listHash;
     }
   }
+
+
 }
