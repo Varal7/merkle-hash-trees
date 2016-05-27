@@ -7,7 +7,8 @@ JC = javac
 CLASSES = \
         MerkleTree.java \
         TestMerkleTreeClass.java \
-		LogServer.java
+				LogServer.java \
+				TestLogServer.java
 
 default: classes
 
