@@ -141,20 +141,28 @@ public class LogServer {
     }
   }
 
-  public LinkedList<byte[]> genPoof(int index){
+  public LinkedList<byte[]> genProof(int index){
     MerkleTree current = tree;
     LinkedList<byte[]> listHash = new LinkedList();
     return makePoof(index, current, listHash);
   }
 
-  LinkedList<byte[]> makePoof(int index, MerkleTree current, LinkedList<byte[]> listHash) {
-    if(current.start <= index){
-      listHash.addFirst(current.left.hash);
-      return makePoof(index, current.right, listHash);
-    }
-    else{
-      listHash.addFirst(current.hash);
+  LinkedList<byte[]> makeProof(int index, MerkleTree current, LinkedList<byte[]> listHash) {
+    if(current.end < index || current.start > index) {
+      System.out.println("Index is out of range.");
       return listHash;
+    } else {
+      if(current.end == index){
+        listHash.addFirst(current.hash);
+        return listHash;
+      } else if(current.left != null && current.left.end < index) {
+        listHash.addFirst(current.left.hash);
+        return makeProof(index, current.right, listHash);
+      } else if(current.left != null && current.left.end >= index) {
+        listHash = makeProof(index, current.left, listHash);
+        listHash.addFirst(current.right.hash);
+        return listHash;
+      }
     }
   }
 }
