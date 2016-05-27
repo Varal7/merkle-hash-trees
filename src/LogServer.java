@@ -79,7 +79,7 @@ public class LogServer {
 
   public MerkleTree appendAux(String log, MerkleTree current) {
     if(current.size == current.nextPower) {
-      MerkleTree newElement = new MerkleTree(log, current.size);
+      MerkleTree newElement = new MerkleTree(log, tree.size);
       return new MerkleTree(current, newElement);
     } else {
       return new MerkleTree(current.left, appendAux(log, current.right));

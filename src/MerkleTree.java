@@ -39,7 +39,7 @@ public class MerkleTree{
 
   public MerkleTree(MerkleTree l, MerkleTree r) {
     if (l.end != r.start - 1) {
-      System.out.println("Trees not contiguous");
+      System.out.println("Trees not contiguous, left end at " + l.end + "; right starts at " + r.start );
       System.exit(1);
     } else {
       try {
@@ -63,5 +63,19 @@ public class MerkleTree{
       System.arraycopy(r.hash, 0, merge, 1 + hashLength, hashLength);
       hash = digest.digest(merge);
     }
+  }
+
+  public void display() {
+    System.out.println("Size of tree: " + size);
+    display_offset(0);
+  }
+
+  void display_offset(int offset) {
+    for (int i = 0; i < offset; i ++) {
+      System.out.print("  ");
+    }
+    System.out.println("["+ start + "," + end + "]: " + hash);
+    if (left != null) left.display_offset(offset+1);
+    if (right != null) right.display_offset(offset+1);
   }
 }
