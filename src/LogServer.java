@@ -7,8 +7,6 @@ import java.util.List;
 import java.security.NoSuchAlgorithmException;
 import java.io.FileNotFoundException;
 
-
-
 public class LogServer {
   MerkleTree tree;
   MessageDigest digest;
@@ -150,13 +148,12 @@ public class LogServer {
   }
 
   LinkedList<byte[]> makePoof(int index, MerkleTree current, LinkedList<byte[]> listHash) {
-    if(current.end >= index){
+    if(current.start <= index){
       listHash.addFirst(current.left.hash);
       return makePoof(index, current.right, listHash);
     }
     else{
-      listHash.addFirst(current.left.hash);
-      listHash.addFirst(current.right.hash);
+      listHash.addFirst(current.hash);
       return listHash;
     }
   }
