@@ -74,16 +74,44 @@ public class LogServer {
   }
 
   public void append(String log) {
-    tree = appendAux(log, tree);
+    tree = appendSingle(log, tree);
   }
 
-  public MerkleTree appendAux(String log, MerkleTree current) {
+  public void append(LinkedList<String> list) {
+    tree = appendSeveral(list, tree);
+  }
+
+  public MerkleTree appendSingle(String log, MerkleTree current) {
     if(current.size == current.nextPower) {
-      MerkleTree newElement = new MerkleTree(log, current.size);
+      MerkleTree newElement = new MerkleTree(log, tree.size);
       return new MerkleTree(current, newElement);
     } else {
-      return new MerkleTree(current.left, appendAux(log, current.right));
+      return new MerkleTree(current.left, appendSingle(log, current.right));
     }
+  }
+
+  public MerkleTree appendSeveral(LinkedList<String> list, MerkleTree current) {
+    if(!list.isEmpty()){
+      MerkleTree result;
+      LinkedList<String> elements = list;
+      LinkedList<String> completeTreeElements = new LinkedList<String>();
+      int nbElements = tree.nextPower - tree.size;
+
+      while(!elements.isEmpty() && nbElements > 0){
+        completeTreeElements.add(elements.poll());
+        nbElements--;
+      }
+
+      result = appendSeveral(completeTreeElements, current);
+
+      if(nbElements == 0 && !elements.isEmpty()){
+        tree = appendSingle(elements.poll(), tree);
+        append(elements);
+      }
+
+      return result;
+    }
+    else return current;
   }
 
   public List<byte[]> genPath(int index) {
