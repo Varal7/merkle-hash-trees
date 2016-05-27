@@ -8,7 +8,8 @@ CLASSES = \
         MerkleTree.java \
         TestMerkleTreeClass.java \
 				LogServer.java \
-				TestLogServer.java
+				TestLogServer.java \
+				TestHash.java
 
 default: classes
 
