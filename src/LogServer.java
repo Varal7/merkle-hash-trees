@@ -11,6 +11,16 @@ public class LogServer {
   MerkleTree tree;
   MessageDigest digest;
 
+  public LogServer(MerkleTree t) {
+    tree = t;
+    try {
+      digest = MessageDigest.getInstance("MD5");
+    }
+    catch(NoSuchAlgorithmException e) {
+      System.out.println("No such algorithm");
+    }
+  }
+
   public LogServer(String inputFile) {
     try {
       digest = MessageDigest.getInstance("MD5");

@@ -1,12 +1,30 @@
 import java.security.MessageDigest;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 
 public class MerkleTree{
   byte[] hash;
   MerkleTree left, right;
   int start, end, hashLength, nextPower, size;
   MessageDigest digest;
+
+  public MerkleTree(MerkleTree old) {
+    for (int i = 0; i < old.hash.length; i++) hash[i] = old.hash[i];
+    left = new MerkleTree(old.left);
+    right = new MerkleTree(old.right);
+    start = old.start;
+    end = old.end;
+    nextPower = old.nextPower;
+    size = old.size;
+    try {
+      digest = MessageDigest.getInstance("MD5");
+      hashLength = digest.getDigestLength();
+    } catch(NoSuchAlgorithmException e) {
+      System.out.println("No such algorithm");
+      System.exit(1);
+    }
+  }
 
   public MerkleTree(String s, int index) {
     try {
@@ -74,8 +92,18 @@ public class MerkleTree{
     for (int i = 0; i < offset; i ++) {
       System.out.print("  ");
     }
-    System.out.println("["+ start + "," + end + "]: " + hash);
+    System.out.println("["+ start + "," + end + "]: " + Arrays.toString(hash));
     if (left != null) left.display_offset(offset+1);
     if (right != null) right.display_offset(offset+1);
   }
+
+  boolean equals(MerkleTree other) {
+    if (start != other.start || end != other.end || nextPower != other.end || size != other.size)
+      return false;
+    for (int i = 0; i < hash.length; i++) {
+      hash[i] = other.hash[i];
+    }
+    return (left.equals(other.left) && (right.equals(other.right)));
+  }
+
 }

@@ -3,17 +3,22 @@ import java.util.LinkedList;
 
 public class TestLogServer {
   public static void main(String [] args) {
-      LogServer l = new LogServer("test.txt");
-      System.out.println("Current root hash [1..6] : " + l.currentRootHash());
-      l.append("Truc");
-      l.append("Bidule");
-      System.out.println("Current root hash [1..8] : " + l.currentRootHash());
-      l.tree.display();
-      LinkedList<byte[]> li = l.genPath(3);
-      for (byte[] b : li) {
-        System.out.println(b);
-      }
 
+
+    //  LogServer l1 = new LogServer("test.txt");
+    //  l1.tree.display();
+
+
+      //l2.tree.display();
+      //if (l1.equals(l2)) System.out.println("l1 equals l2");
+
+
+      LogServer l1 = new LogServer("1.txt");
+      l1.append("1");
+      l1.append("1");
+      l1.append("1");
+
+      l1.tree.display();
 
   }
 }
