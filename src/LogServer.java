@@ -5,11 +5,13 @@ import java.util.LinkedList;
 
 public class LogServer{
   MerkleTree tree;
+  MessageDigest digest;
+  int size;
 
   public LogServer(String inputFile){
     Scanner input = new Scanner(new FileReader(inputFile));
     Queue<MerkleTree> MerkleQueue = new LinkedList<MerkleTree>();
-    MessageDigest digest = MessageDigest.getInstance("SHA−256");
+    digest = MessageDigest.getInstance("SHA−256");
 
     int i = 0;
     while(input.hasNextLine()){
@@ -18,6 +20,7 @@ public class LogServer{
 
       try{
         MerkleQueue.add(Merkle);
+        size++;
       }
       catch(Exception e){
         System.out.println("No more space available.");
@@ -58,5 +61,35 @@ public class LogServer{
 
   public byte[] currentRootHash(){
     return tree.hash;
+  }
+
+  public void append(String log){
+    MerkleTree current = tree;
+    tree.hash = auxAppend(log, current);
+  }
+
+  public List<byte[]> genPath(int index){
+    MerkleTree current = tree;
+    List<byte[]> listHash = new List<byte[]>();
+    makePath(index, current, listHash);
+
+    return listHash;
+  }
+
+  void makePath(int index, MerkleTree current, List<byte[]> listHash){
+    if(current.start == current.end && current.end == index){
+
+    }
+    else if(current.left != null && current.left.end >= index){
+      listHash.add(current.right.hash);
+      makePath(index, current.left, listHash);
+    }
+    else if(current.right != null && current.right.end >= index){
+      listHash.add(current.left.hash);
+      makePath(index, current.right, listHash);
+    }
+    else{
+      System.out.println("Index is out of range.");
+    }
   }
 }
