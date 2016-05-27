@@ -74,44 +74,52 @@ public class LogServer {
   }
 
   public void append(String log) {
-    tree = appendSingle(log, tree);
+    tree = appendSingle(log, tree, tree.size);
   }
 
   public void append(LinkedList<String> list) {
-    tree = appendSeveral(list, tree);
+    tree = appendSeveral(list, tree, tree.size);
   }
 
-  public MerkleTree appendSingle(String log, MerkleTree current) {
-    if(current.size == current.nextPower) {
-      MerkleTree newElement = new MerkleTree(log, tree.size);
+  public MerkleTree appendSingle(String log, MerkleTree current, int rank) {
+    if(current == null) return new MerkleTree(log, 0);
+    else if(current.size == current.nextPower) {
+      MerkleTree newElement = new MerkleTree(log, rank);
       return new MerkleTree(current, newElement);
     } else {
-      return new MerkleTree(current.left, appendSingle(log, current.right));
+      return new MerkleTree(current.left, appendSingle(log, current.right, rank));
     }
   }
 
-  public MerkleTree appendSeveral(LinkedList<String> list, MerkleTree current) {
-    if(!list.isEmpty()){
-      MerkleTree result;
-      LinkedList<String> elements = list;
-      LinkedList<String> completeTreeElements = new LinkedList<String>();
-      int nbElements = tree.nextPower - tree.size;
-
-      while(!elements.isEmpty() && nbElements > 0){
-        completeTreeElements.add(elements.poll());
-        nbElements--;
-      }
-
-      result = appendSeveral(completeTreeElements, current);
-
-      if(nbElements == 0 && !elements.isEmpty()){
-        tree = appendSingle(elements.poll(), tree);
-        append(elements);
-      }
-
-      return result;
+  public MerkleTree appendSeveral(LinkedList<String> list, MerkleTree current, int rank) {
+    if(list.isEmpty()) return current;
+    else if(current == null){
+      current = new MerkleTree(list.poll(), 0);
+      return appendSeveral(list, current, rank+1);
     }
-    else return current;
+    else{
+      int nbElements = current.nextPower - current.size;
+      MerkleTree result;
+
+      if(nbElements == 0){
+        result = new MerkleTree(current, new MerkleTree(list.poll(), rank));
+        return appendSeveral(list, result, rank + 1);
+      }
+      else if(list.size() > nbElements){
+        LinkedList<String> elements = list;
+        LinkedList<String> completeTreeElements = new LinkedList<String>();
+
+        for(int i = 0; i < nbElements; i++) completeTreeElements.add(elements.poll());
+
+        result = new MerkleTree(current.left, appendSeveral(completeTreeElements, current.right, rank));
+        result = new MerkleTree(result, new MerkleTree(elements.poll(), rank + nbElements));
+        return new MerkleTree(result.left, appendSeveral(elements, result.right, rank + nbElements + 1));
+      }
+      else{
+        if(list.size() == 1) return appendSingle(list.poll(), current, rank);
+        else return new MerkleTree(current.left, appendSeveral(list, current.right, rank));
+      }
+    }
   }
 
   public List<byte[]> genPath(int index) {
