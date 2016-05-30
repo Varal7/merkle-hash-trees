@@ -132,7 +132,7 @@ public class LogServer {
 
   public LinkedList<byte[]> genPath(int index) {
     MerkleTree current = tree;
-    LinkedList<byte[]> listHash = new LinkedList();
+    LinkedList<byte[]> listHash = new LinkedList<byte[]>();
     return makePath(index, current, listHash);
   }
 
@@ -153,7 +153,7 @@ public class LogServer {
 
   public LinkedList<byte[]> genProof(int index){
     MerkleTree current = tree;
-    LinkedList<byte[]> listHash = new LinkedList();
+    LinkedList<byte[]> listHash = new LinkedList<byte[]>();
     return makeProof(index, current, listHash);
   }
 

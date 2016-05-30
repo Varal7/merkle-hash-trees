@@ -113,7 +113,7 @@ public class MerkleTree{
     }
     for (int i = 0; i < hash.length; i++) {
       if (hash[i] != other.hash[i]) {
-        if (Constants.DEV_MODE) System.out.println("Merkle trees differ by hash at node: "+ "["+ start + "," + end + "]");
+        if (DEV_MODE) System.out.println("Merkle trees differ by hash at node: "+ "["+ start + "," + end + "]");
         return false;
       }
     }
