@@ -154,7 +154,7 @@ public class LogServer {
   public LinkedList<byte[]> genProof(int index){
     MerkleTree current = tree;
     LinkedList<byte[]> listHash = new LinkedList();
-    return makePoof(index, current, listHash);
+    return makeProof(index, current, listHash);
   }
 
   LinkedList<byte[]> makeProof(int index, MerkleTree current, LinkedList<byte[]> listHash) {
@@ -162,17 +162,32 @@ public class LogServer {
       System.out.println("Index is out of range.");
       return listHash;
     } else {
-      if(current.end == index){
-        listHash.addFirst(current.hash);
-        return listHash;
-      } else if(current.left != null && current.left.end < index) {
-        listHash.addFirst(current.left.hash);
-        return makeProof(index, current.right, listHash);
-      } else if(current.left != null && current.left.end >= index) {
-        listHash = makeProof(index, current.left, listHash);
-        listHash.addFirst(current.right.hash);
-        return listHash;
-      }
+        if(current.end == index){
+          listHash.addFirst(current.hash);
+          return listHash;
+        } else if(current.left != null && current.left.end < index) {
+          listHash.addFirst(current.left.hash);
+          return makeProof(index, current.right, listHash);
+        } else if(current.left != null && current.left.end >= index) {
+          listHash = makeProof(index, current.left, listHash);
+          listHash.addFirst(current.right.hash);
+          return listHash;
+        } else {
+          System.out.println("You forgot to put some text here");
+          return null;
+        }
     }
   }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null)
+      return false;
+    if (!LogServer.class.isAssignableFrom(obj.getClass()))
+      return false;
+    final LogServer other = (LogServer) obj;
+    return tree.equals(other.tree);
+  }
+
+
 }

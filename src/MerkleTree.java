@@ -4,6 +4,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
 public class MerkleTree{
+  static final boolean DEV_MODE = true;
+
   byte[] hash;
   MerkleTree left, right;
   int start, end, hashLength, nextPower, size;
@@ -97,11 +99,32 @@ public class MerkleTree{
     if (right != null) right.display_offset(offset+1);
   }
 
-  boolean equals(MerkleTree other) {
-    if (start != other.start || end != other.end || nextPower != other.end || size != other.size)
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null)
       return false;
+    if (!MerkleTree.class.isAssignableFrom(obj.getClass()))
+      return false;
+    final MerkleTree other = (MerkleTree) obj;
+
+    if (start != other.start || end != other.end || nextPower != other.nextPower || size != other.size) {
+      if (DEV_MODE) System.out.println("Merkle trees differ at node: "+ "["+ start + "," + end + "] :");
+      return false;
+    }
     for (int i = 0; i < hash.length; i++) {
-      hash[i] = other.hash[i];
+      if (hash[i] != other.hash[i]) {
+        if (Constants.DEV_MODE) System.out.println("Merkle trees differ by hash at node: "+ "["+ start + "," + end + "]");
+        return false;
+      }
+    }
+    if (left == null || right == null) {
+      assert(right == null && left ==null);
+      if (other.left == null || other.right == null) {
+        assert(other.right == null && other.left == null);
+        return true;
+      }
+      if (DEV_MODE) System.out.println("Merkle trees differ at node: "+ "["+ start + "," + end + "] :");
+      return false;
     }
     return (left.equals(other.left) && (right.equals(other.right)));
   }
