@@ -43,24 +43,43 @@ public class Auditor {
     if(newLogServer.tree.size != this.size || newLogServer.tree.hash != this.rootHash) {
       LinkedList<byte[]> proofPath = server.genProof(this.size);
 
+      int depthDifference, depthInitNew;
+      depthDifference = ((int) Math.floor(Math.log(newLogServer.tree.size) / Math.log(2))) - ((int) Math.floor(Math.log(this.size) / Math.log(2)));
+      depthInitNew = proofPath.length() - 1;
+      // TODO : depthInit
+      depthInit = 0;
+
       byte[] hashNew = new byte[hashLength];
       byte[] hash = new byte[hashLength];
       byte[] mergeNew = new byte[1 + 2 * hashLength];
       byte[] merge = new byte[1 + 2 * hashLength];
-      boolean init = false;
 
       hashNew = proofPath.poll();
+      System.arraycopy(hash, 0, hashNew, 1, hashLength);
       mergeNew[0] = 0x01;
       System.arraycopy(hashNew, 0, mergeNew, 1, hashLength);
+      merge[0] = 0x01;
+      System.arraycopy(hash, 0, merge, 1, hashLength);
+
+      int currentDepthNew = depthInitNew - depthDifference;
+      int currentDepth = depthInit;
 
       for(byte[] sentHash : proofPath) {
         System.arraycopy(sentHash, 0, mergeNew, 1 + hashLength, hashLength);
-        System.arraycopy(sentHash, 0, merge, 1 + hashLength, hashLength);
         hashNew = digest.digest(mergeNew);
         System.arraycopy(hashNew, 0, mergeNew, 1, hashLength);
+
+        if(currentDepthNew == currentDepth && currentDepth > 0) {
+          System.arraycopy(sentHash, 0, merge, 1 + hashLength, hashLength);
+          hash = digest.digest(merge);
+          System.arraycopy(hash, 0, merge, 1, hashLength);
+          currentDepth--;
+        }
+
+        currentDepthNew--;
       }
 
-      if(hash != newLogServer.tree.hash) return false;
+      if(hashNew == newLogServer.tree.hash && hash == this.rootHash) return true;
       else return false;
     }
   }
