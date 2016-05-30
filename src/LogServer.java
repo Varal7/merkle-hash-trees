@@ -169,8 +169,8 @@ public class LogServer {
           listHash.addFirst(current.left.hash);
           return makeProof(index, current.right, listHash);
         } else if(current.left != null && current.left.end >= index) {
-          listHash = makeProof(index, current.left, listHash);
           listHash.addFirst(current.right.hash);
+          listHash = makeProof(index, current.left, listHash);
           return listHash;
         } else {
           System.out.println("You forgot to put some text here");
