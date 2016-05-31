@@ -1,33 +1,18 @@
 import java.util.Scanner;
-import java.security.MessageDigest;
 import java.io.FileReader;
 import java.util.Queue;
 import java.util.LinkedList;
 import java.util.List;
-import java.security.NoSuchAlgorithmException;
 import java.io.FileNotFoundException;
 
 public class LogServer {
   MerkleTree tree;
-  MessageDigest digest;
 
   public LogServer(MerkleTree t) {
     tree = t;
-    try {
-      digest = MessageDigest.getInstance("MD5");
-    }
-    catch(NoSuchAlgorithmException e) {
-      System.out.println("No such algorithm");
-    }
   }
 
   public LogServer(String inputFile) {
-    try {
-      digest = MessageDigest.getInstance("MD5");
-    }
-    catch(NoSuchAlgorithmException e) {
-      System.out.println("No such algorithm");
-    }
 
     Queue<MerkleTree> merkleQueue = new LinkedList<MerkleTree>();
     Scanner input;
@@ -49,7 +34,6 @@ public class LogServer {
       System.out.println("No such file");
       System.exit(1);
     }
-
     buildTree(merkleQueue);
   }
 
@@ -77,7 +61,7 @@ public class LogServer {
     }
   }
 
-  public byte[] currentRootHash() {
+  public Hash currentRootHash() {
     return tree.hash;
   }
 
@@ -130,13 +114,13 @@ public class LogServer {
     }
   }
 
-  public LinkedList<byte[]> genPath(int index) {
+  public LinkedList<Hash> genPath(int index) {
     MerkleTree current = tree;
-    LinkedList<byte[]> listHash = new LinkedList<byte[]>();
+    LinkedList<Hash> listHash = new LinkedList<Hash>();
     return makePath(index, current, listHash);
   }
 
-  LinkedList<byte[]> makePath(int index, MerkleTree current, LinkedList<byte[]> listHash) {
+  LinkedList<Hash> makePath(int index, MerkleTree current, LinkedList<Hash> listHash) {
     if(current.start == current.end && current.end == index){
       return listHash;
     } else if(current.left != null && current.left.end >= index) {
@@ -151,13 +135,13 @@ public class LogServer {
     }
   }
 
-  public LinkedList<byte[]> genProof(int index){
+  public LinkedList<Hash> genProof(int index){
     MerkleTree current = tree;
-    LinkedList<byte[]> listHash = new LinkedList<byte[]>();
+    LinkedList<Hash> listHash = new LinkedList<Hash>();
     return makeProof(index, current, listHash);
   }
 
-  LinkedList<byte[]> makeProof(int index, MerkleTree current, LinkedList<byte[]> listHash) {
+  LinkedList<Hash> makeProof(int index, MerkleTree current, LinkedList<Hash> listHash) {
     if(current.end < index || current.start > index) {
       System.out.println("Index is out of range.");
       return listHash;
@@ -173,7 +157,7 @@ public class LogServer {
           listHash = makeProof(index, current.left, listHash);
           return listHash;
         } else {
-          System.out.println("You forgot to put some text here");
+          System.out.println("You forgot to put some text here"); //TODO
           return null;
         }
     }
@@ -188,6 +172,4 @@ public class LogServer {
     final LogServer other = (LogServer) obj;
     return tree.equals(other.tree);
   }
-
-
 }
