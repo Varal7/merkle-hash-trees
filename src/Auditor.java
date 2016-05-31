@@ -15,29 +15,39 @@ public class Auditor {
   }
 
   public boolean isMember(String event, int index) {
-    // int index;
-    // Deduce index from String event;
     LinkedList<Hash> path = server.genPath(index);
-
-    Hash hash = new Hash(event);
+    Hash hash = new Hash(event); //initialize with event
+    hash = buildHash(event, index, server.tree.end, path);
     if (DEV_MODE)  System.out.println(hash.toString());
+    return hash.equals(rootHash);
+  }
 
+  public Hash buildHash(String event, int index, int end, LinkedList<Hash> path) {
+    if (end == 0 ) {
+      if (path.size() != 0) {
+        System.out.println("hash list not empty!");
+      }
+      return new Hash(event);
+    }
+    int middle = greatestPowerTwoSmaller(end);
 
-    Hash merge;
-
-    for(Hash sent_hash : path) {
-      hash = new Hash(hash, sent_hash);
-      if (DEV_MODE)  System.out.println(hash.toString());
+    if (index < middle) {
+      Hash right = path.removeLast();
+      Hash left = buildHash(event, index, middle, path);
+      return new Hash(left, right);
     }
 
-    if(hash.equals(rootHash)) return true;
-    else return false;
+    Hash left = path.removeLast();
+    Hash right = buildHash(event, index, end - middle, path);
+    return new Hash(left, right);
+
   }
+
 
   public boolean isConsistent(LogServer newLogServer) {
     if (newLogServer.tree.size == this.size && newLogServer.tree.hash.equals(this.rootHash))
       return true;
-      
+
     LinkedList<Hash> proofPath = server.genProof(this.size);
 
     int depthDifference, depthInitNew;
