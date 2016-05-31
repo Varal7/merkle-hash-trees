@@ -33,16 +33,24 @@ public class TestLogServer {
 
 
 
+    //
+    // LogServer l3 = new LogServer("data/8.txt");
+    // l3.tree.display();
+    // System.out.println("Audit path for 3");
+    // for (Hash hash : l3.genPath(1)) {
+    //   System.out.println(hash);
+    // }
+    // System.out.println("Proof for [0..5]");
+    // for (Hash hash : l3.genPath(5)) {
+    //   System.out.println(hash);
+    // }
 
-    LogServer l3 = new LogServer("data/8.txt");
-    l3.tree.display();
-    System.out.println("Audit path for 3");
-    for (Hash hash : l3.genPath(1)) {
-      System.out.println(hash);
-    }
-    System.out.println("Proof for [0..5]");
-    for (Hash hash : l3.genPath(5)) {
-      System.out.println(hash);
-    }
+
+     LogServer l = new LogServer("data/8.txt");
+     l.tree.display();
+     System.out.println("Proof for 6 (= index 5):");
+     for (Hash hash : l.genProof(5)) {
+       System.out.println(hash);
+     }
   }
 }
