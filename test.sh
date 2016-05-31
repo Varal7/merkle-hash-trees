@@ -1,3 +1,3 @@
 #!/bin/zsh
 
-java -classpath bin/ TestLogServer
+java -classpath bin/ TestAuditor

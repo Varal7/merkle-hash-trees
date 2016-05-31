@@ -4,6 +4,8 @@ public class MerkleTree{
   Hash hash;
   MerkleTree left, right;
   int start, end, nextPower, size;
+  //TODO :    f = v && !(v & (v - 1)); returns true iff v is a power of 2
+
 
   public MerkleTree(MerkleTree old) {
     hash = new Hash(old.hash);
