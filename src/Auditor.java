@@ -35,13 +35,13 @@ public class Auditor {
   }
 
   public void isConsistent(LogServer newLogServer) {
-    if(newLogServer.tree.size != this.size || !(newLogServer.tree.hash.equals(this.rootHash)) {
+    if(newLogServer.tree.size != this.size || !(newLogServer.tree.hash.equals(this.rootHash))) {
       LinkedList<Hash> proofPath = server.genProof(this.size);
 
       int depthDifference, depthInitNew;
       depthDifference = ((int) Math.floor(Math.log(newLogServer.tree.size) / Math.log(2))) - ((int) Math.floor(Math.log(this.size) / Math.log(2)));
-      depthInitNew = proofPath.length() - 1;
-      depthInit = depthInit(this.size);
+      depthInitNew = proofPath.size() - 1;
+      int depthInit = depthInit(this.size);
 
       // byte[] hashNew = new byte[hashLength];
       // byte[] hash = new byte[hashLength];
@@ -50,16 +50,14 @@ public class Auditor {
 
       Hash hashNew;
       Hash hash;
-      Hash merge;
-      Hash mergeNew;
 
       hashNew = proofPath.poll();
-      System.arraycopy(hash, 0, hashNew, 1, hashLength);
-      mergeNew[0] = 0x01;
-      System.arraycopy(hashNew, 0, mergeNew, 1, hashLength);
-      merge[0] = 0x01;
-      System.arraycopy(hash, 0, merge, 1, hashLength);
-      //TODO : WTF ?
+      hash = new Hash(hashNew);
+      // System.arraycopy(hash, 0, hashNew, 1, hashLength);
+      // mergeNew[0] = 0x01;
+      // System.arraycopy(hashNew, 0, mergeNew, 1, hashLength);
+      // merge[0] = 0x01;
+      // System.arraycopy(hash, 0, merge, 1, hashLength);
 
 
       int currentDepthNew = depthInitNew - depthDifference;
@@ -69,13 +67,13 @@ public class Auditor {
         // System.arraycopy(sentHash, 0, mergeNew, 1 + hashLength, hashLength);
         // hashNew = digest.digest(mergeNew);
         // System.arraycopy(hashNew, 0, mergeNew, 1, hashLength);
-        mergeNew = new Hash(mergeNew, sentHash);
+        hashNew = new Hash(hashNew, sentHash);
 
         if(currentDepthNew == currentDepth && currentDepth > 0) {
           // System.arraycopy(sentHash, 0, merge, 1 + hashLength, hashLength);
           // hash = digest.digest(merge);
           // System.arraycopy(hash, 0, merge, 1, hashLength);
-          merge = new Hash(merge, sentHash);
+          hash = new Hash(hash, sentHash);
           currentDepth--;
         }
 
