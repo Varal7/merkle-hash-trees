@@ -46,8 +46,7 @@ public class Auditor {
       int depthDifference, depthInitNew;
       depthDifference = ((int) Math.floor(Math.log(newLogServer.tree.size) / Math.log(2))) - ((int) Math.floor(Math.log(this.size) / Math.log(2)));
       depthInitNew = proofPath.length() - 1;
-      // TODO : depthInit
-      depthInit = 0;
+      depthInit = depthInit(this.size);
 
       byte[] hashNew = new byte[hashLength];
       byte[] hash = new byte[hashLength];
@@ -82,5 +81,28 @@ public class Auditor {
       if(hashNew == newLogServer.tree.hash && hash == this.rootHash) return true;
       else return false;
     }
+  }
+
+  public int depthInit(int index) {
+    int init = greatestPowerTwoSmaller(index);
+    int k = 0;
+    for(int i = init + 1; i <= index; ++i) k += (1 - powerPrimeFactorTwo(i));
+    return k;
+  }
+
+  public int greatestPowerTwoSmaller(int index) {
+    int p = 1;
+    while(2 * p <= index) p *= 2;
+    return p;
+  }
+
+  public int powerPrimeFactorTwo(int index) {
+    int p = 0;
+    int k = index;
+    while(k % 2 == 0) {
+      p++;
+      k /= 2;
+    }
+    return p;
   }
 }
