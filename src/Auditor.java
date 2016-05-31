@@ -23,6 +23,7 @@ public class Auditor {
   }
 
   public Hash buildHash(String event, int index, int end, LinkedList<Hash> path) {
+    System.out.println("Ends at: " + end);
     if (end == 0 ) {
       if (path.size() != 0) {
         System.out.println("hash list not empty!");
@@ -33,12 +34,17 @@ public class Auditor {
 
     if (index < middle) {
       Hash right = path.removeLast();
-      Hash left = buildHash(event, index, middle, path);
+      Hash left = buildHash(event, index, middle - 1, path);
+    if (DEV_MODE)  System.out.println("Receiving hash:" + left.toString());
+    if (DEV_MODE)  System.out.println("Merging with right:" + right.toString());
+
       return new Hash(left, right);
     }
 
     Hash left = path.removeLast();
-    Hash right = buildHash(event, index, end - middle, path);
+    Hash right = buildHash(event, index - middle, end - middle, path);
+    if (DEV_MODE)  System.out.println("Receiving hash:" + right.toString());
+    if (DEV_MODE)  System.out.println("Merging with left:" + left.toString());
     return new Hash(left, right);
 
   }
