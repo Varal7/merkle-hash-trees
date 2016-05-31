@@ -1,5 +1,5 @@
 public class MerkleTree{
-  static final boolean DEV_MODE = true;
+  static final boolean DEV_MODE = false;
 
   Hash hash;
   MerkleTree left, right;

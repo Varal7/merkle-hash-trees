@@ -3,7 +3,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Auditor {
-  static final boolean DEV_MODE = true;
+  static final boolean DEV_MODE = false;
   Hash rootHash;
   LogServer server;
 
@@ -32,25 +32,28 @@ public class Auditor {
     if (index < middle) {
       Hash right = path.removeLast();
       Hash left = buildHash(event, index, middle - 1, path);
-    if (DEV_MODE)  System.out.println("Receiving hash:" + left.toString());
-    if (DEV_MODE)  System.out.println("Merging with right:" + right.toString());
-
+      if (DEV_MODE)  System.out.println("Receiving hash:" + left.toString());
+      if (DEV_MODE)  System.out.println("Merging with right:" + right.toString());
       return new Hash(left, right);
     }
-
     Hash left = path.removeLast();
     Hash right = buildHash(event, index - middle, end - middle, path);
     if (DEV_MODE)  System.out.println("Receiving hash:" + right.toString());
     if (DEV_MODE)  System.out.println("Merging with left:" + left.toString());
     return new Hash(left, right);
-
   }
 
 
     public boolean isConsistent(LogServer newLogServer) {
-      //TODO : testing sizes
       if (server.tree.size > newLogServer.tree.size)
         return false;
+      if (server.tree.size == newLogServer.tree.size) {
+        if (rootHash.equals(newLogServer.currentRootHash())) {
+          return true;
+        }
+        return false;
+      }
+
       int index = server.tree.end;
       LinkedList<Hash> path = newLogServer.genProof(index);
 
