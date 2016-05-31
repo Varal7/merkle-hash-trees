@@ -49,6 +49,8 @@ public class Auditor {
 
     public boolean isConsistent(LogServer newLogServer) {
       //TODO : testing sizes
+      if (server.tree.size > newLogServer.tree.size)
+        return false;
       int index = server.tree.end;
       LinkedList<Hash> path = newLogServer.genProof(index);
 
